@@ -18,7 +18,7 @@ class MyGrid(GridLayout):
         self.add_widget(self.grid_one)
 
         button = self.Make_button("Submit")
-        button.bind(on_press=self.pressed)
+        button.bind(on_press=self.pressed(any, self.grid_one))
 
     def Label_input(self, variable_name, label_text, multipleline=False, grid_position=None):
         if grid_position is None:
@@ -41,6 +41,7 @@ class MyGrid(GridLayout):
         return button;
 
     def pressed(self, instance):
+        grid_one.name.text = "Name: " + self.name.text
         print("pressed")
 
 class MyApp(App):
