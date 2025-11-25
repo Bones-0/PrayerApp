@@ -4,45 +4,64 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.core.window import Window
+
+
 class MyGrid(GridLayout):
     def __init__(self, **kwargs):
         super(MyGrid, self).__init__(**kwargs)
         self.cols = 1
-        
-        self.grid_one = GridLayout()    
-        self.grid_one.cols = 2
 
-        self.Label_input("name", "Name:", False, self.grid_one)
-        self.Label_input("address", "Address:", True, self.grid_one)
-        self.Label_input("email", "Email:", False, self.grid_one)
+        # First grid: labels + inputs
+        self.grid_one = GridLayout(cols=2)
+        
+        # Store inputs as attributes on self
+        self.name_input = self.Label_input("name_input", "Name:", False, self.grid_one)
+        self.address_input = self.Label_input("address_input", "Address:", True, self.grid_one)
+        self.email_input = self.Label_input("email_input", "Email:", False, self.grid_one)
+
         self.add_widget(self.grid_one)
 
-        button = self.Make_button("Submit")
-        button.bind(on_press=self.pressed(any, self.grid_one))
+        # Example: access the textinput object
+        print("Name widget:", self.name_input)
+        # print("Name text:", self.name_input.text)  # empty at start
 
-    def Label_input(self, variable_name, label_text, multipleline=False, grid_position=None):
+        button = self.Make_button("Submit")
+        button.bind(on_press=self.pressed)
+
+    def Label_input(self, attr_name, label_text, multiline=False, grid_position=None):
+        """Create a label + text input, attach the text input to self.attr_name."""
+        label = Label(text=label_text)
+        text_input = TextInput(multiline=multiline)
+
         if grid_position is None:
-            self.add_widget(Label(text=label_text))
-            self.variable_name = TextInput(multiline=multipleline)
-            self.add_widget(self.variable_name)
+            self.add_widget(label)
+            self.add_widget(text_input)
         else:
-            grid_position.add_widget(Label(text=label_text))
-            grid_position.variable_name = TextInput(multiline=multipleline)
-            grid_position.add_widget(grid_position.variable_name)
+            grid_position.add_widget(label)
+            grid_position.add_widget(text_input)
+
+        # Attach to self so you can use it later
+        setattr(self, attr_name, text_input)
+        return text_input
+
     def Make_button(self, button_text, grid_position=None):
-        button = None
+        button = Button(text=button_text, font_size=32)
         if grid_position is None:
-            button = Button(text=button_text, font_size=32)
             self.add_widget(button)
         else:
-            button = Button(text=button_text)
             grid_position.add_widget(button)
-            self.add_widget(grid_position)
-        return button;
+        return button
 
     def pressed(self, instance):
-        grid_one.name.text = "Name: " + self.name.text
-        print("pressed")
+        # Read user input from text fields
+        name = self.name_input.text
+        address = self.address_input.text
+        email = self.email_input.text
+
+        print("Name:", name)
+        print("Address:", address)
+        print("Email:", email)
+
 
 class MyApp(App):
     def build(self):
